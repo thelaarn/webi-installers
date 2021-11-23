@@ -72,6 +72,13 @@ function normalize(all) {
           return osMap[regKey].test(rel.name || rel.download);
         }) || 'unknown';
     }
+    // Hacky-doo for musl
+    // TODO some sort of glibc vs musl tag?
+    if (!rel._musl) {
+      if (/(\b|\.|_|-)(musl)(\b|\.|_|-)/.test(rel.download)) {
+        rel._musl = true;
+      }
+    }
     supported.oses[rel.os] = true;
 
     if (!rel.arch) {
@@ -104,7 +111,7 @@ function normalize(all) {
       if ('tar' === exts[1]) {
         rel.ext = exts.reverse().join('.');
         tarExt = 'tar';
-      } else if ('tgz' == exts[0]) {
+      } else if ('tgz' === exts[0]) {
         rel.ext = 'tar.gz';
         tarExt = 'tar';
       } else {
